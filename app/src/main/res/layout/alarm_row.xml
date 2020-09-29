@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/alarm_row_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00 AM"
+        style="?android:attr/textAppearanceLarge"/>
+
+    <TextView
+        android:id="@+id/alarm_row_days"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/alarm_row_time"
+        android:text=""
+        android:layout_marginTop="6dp"
+        style="?android:attr/textAppearanceSmall"/>
+
+    <TextView
+        android:id="@+id/alarm_row_label"
+        style="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_toEndOf="@+id/alarm_row_time"
+        android:layout_marginStart="10dp"
+        android:text="label" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/alarm_row_enable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

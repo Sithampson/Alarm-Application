@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".AddEditAlarmActivity">
+
+    <TimePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/alarmTimePicker"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=""
+        android:id="@+id/labelText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/alarmTimePicker"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/save_alarmbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/labelText"
+        android:layout_centerHorizontal="true"
+        android:text="Save"/>
+
+    <Button
+        android:id="@+id/delete_alarmbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/save_alarmbutton"
+        android:layout_centerHorizontal="true"
+        android:text="Delete"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/sunday_togglebutton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textOn="S"
+            android:textOff="S"
+            android:background="@drawable/toggle_button_colorshape"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/monday_togglebutton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textOn="M"
+            android:textOff="M"
+            android:background="@drawable/toggle_button_colorshape"
+            style="?android:attr/borderlessButtonStyle"/>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/tuesday_togglebutton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textOn="T"
+            android:textOff="T"
+            android:background="@drawable/toggle_button_colorshape"
+            style="?android:attr/borderlessButtonStyle"/>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/wednesday_togglebutton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textOn="W"
+            android:textOff="W"
+            android:background="@drawable/toggle_button_colorshape"
+            style="?android:attr/borderlessButtonStyle"/>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/thursday_togglebutton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textOn="T"
+            android:textOff="T"
+            android:background="@drawable/toggle_button_colorshape"
+            style="?android:attr/borderlessButtonStyle"/>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/friday_togglebutton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textOn="F"
+            android:textOff="F"
+            android:background="@drawable/toggle_button_colorshape"
+            style="?android:attr/borderlessButtonStyle"/>
+
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/saturday_togglebutton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:textOn="S"
+            android:textOff="S"
+            android:background="@drawable/toggle_button_colorshape"
+            style="?android:attr/borderlessButtonStyle"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
