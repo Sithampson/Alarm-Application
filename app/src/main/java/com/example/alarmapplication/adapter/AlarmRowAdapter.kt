@@ -32,6 +32,7 @@ class AlarmRowAdapter(private val context: Context, alarmList: List<Alarm>?) : R
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val alarm: Alarm = alarmList[position]
+        val db = DatabaseHelper(context)
 
         val formattedDate = TIME_FORMAT.format(alarm.getTime()) +" " + AM_PM_FORMAT.format(alarm.getTime())
 
@@ -55,7 +56,51 @@ class AlarmRowAdapter(private val context: Context, alarmList: List<Alarm>?) : R
         if(days[6])
             holder.daytext!!.append("Sat ")
 
+        holder.enableswitch!!.setOnCheckedChangeListener(null)
         holder.enableswitch!!.isChecked = alarm.getisEnabled()
+        holder.enableswitch!!.setOnCheckedChangeListener { _, isChecked ->
+
+            val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+                intent.putExtra("Alarm_label", alarm.getLabel())
+                intent.putExtra("Alarm_id", alarm.getId())
+                intent.putExtra("Alarm_notification_sound", alarm.getUriNotification())
+                PendingIntent.getBroadcast(context, alarm.getId().toInt(), intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
+
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//            val allDays: BooleanArray = alarm.getDay()!!
+            val c = Calendar.getInstance()
+
+            if(isChecked){
+                val currentTime = System.currentTimeMillis()
+
+                if(c.timeInMillis > currentTime) {
+                    alarmManager.cancel(alarmIntent)
+                    val dayOfWeek = c.get(Calendar.DAY_OF_WEEK)
+                    c.timeInMillis = alarm.getTime()
+
+                    if (!days[0] && !days[1] && !days[2] && !days[3] && !days[4] && !days[5] && !days[6]) {
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.timeInMillis, alarmIntent)
+                    } else if (days[dayOfWeek - 1]) {
+                        c.set(Calendar.DAY_OF_WEEK, dayOfWeek)
+                        alarmManager.setRepeating(
+                            AlarmManager.RTC_WAKEUP,
+                            c.timeInMillis,
+                            AlarmManager.INTERVAL_DAY * 7,
+                            alarmIntent
+                        )
+                    }
+                }
+            }
+            else{
+                alarmManager.cancel(alarmIntent)
+            }
+
+            db.switchCompatEnable(isChecked, alarm.getId())
+
+        }
     }
 
     override fun getItemCount(): Int {
@@ -82,52 +127,12 @@ class AlarmRowAdapter(private val context: Context, alarmList: List<Alarm>?) : R
         }
 
         init {
-            val db = DatabaseHelper(context)
             itemView.setOnClickListener(this)
             timetext = itemView.findViewById(R.id.alarm_row_time)
             labeltext = itemView.findViewById(R.id.alarm_row_label)
             daytext = itemView.findViewById(R.id.alarm_row_days)
             enableswitch = itemView.findViewById(R.id.alarm_row_enable)
 
-
-            enableswitch?.setOnCheckedChangeListener { _, isChecked ->
-
-//                val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-//                    intent.putExtra("Alarm_label", alarmList[adapterPosition].getLabel())
-//                    intent.putExtra("Alarm_id", alarmList[adapterPosition].getId())
-//                    PendingIntent.getBroadcast(context, alarmList[adapterPosition].getId().toInt(), intent,
-//                        PendingIntent.FLAG_UPDATE_CURRENT
-//                    )
-//                }
-//
-//                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//                val allDays: BooleanArray = alarmList[adapterPosition].getDay()!!
-//                val c = Calendar.getInstance()
-//
-//                if(isChecked){
-//                    val dayOfWeek = c.get(Calendar.DAY_OF_WEEK)
-//                    c.timeInMillis = alarmList[adapterPosition].getTime()
-//
-//                    if(!allDays[0] && !allDays[1] && !allDays[2] && !allDays[3] && !allDays[4] && !allDays[5] && !allDays[6]){
-//                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.timeInMillis, alarmIntent)
-//                    }
-//
-//                    else if(allDays[dayOfWeek-1]){
-//                        c.set(Calendar.DAY_OF_WEEK, dayOfWeek)
-//                        alarmManager.setRepeating(
-//                            AlarmManager.RTC_WAKEUP,
-//                            c.timeInMillis,
-//                            AlarmManager.INTERVAL_DAY * 7,
-//                            alarmIntent
-//                        )
-//                    }
-//                }
-//                else{
-//                    alarmManager.cancel(alarmIntent)
-//                }
-
-                db.switchCompatEnable(isChecked, alarmList[adapterPosition].getId())
-            }
         }
 
     }

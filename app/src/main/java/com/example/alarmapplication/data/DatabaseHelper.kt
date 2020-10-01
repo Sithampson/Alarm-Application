@@ -22,7 +22,8 @@ class DatabaseHelper(context: Context) :
                 COL_THURS + " INTEGER NOT NULL, " +
                 COL_FRI + " INTEGER NOT NULL, " +
                 COL_SAT + " INTEGER NOT NULL, " +
-                COL_IS_ENABLED + " INTEGER NOT NULL" +
+                COL_IS_ENABLED + " INTEGER NOT NULL, " +
+                COL_URI_NOTIFICATION + " TEXT NOT NULL " +
                 ");"
         sqLiteDatabase.execSQL(createAlarmsTable)
     }
@@ -49,6 +50,7 @@ class DatabaseHelper(context: Context) :
         cv.put(COL_SUN, if (days[Alarm.SUN]) 1 else 0)
 
         cv.put(COL_IS_ENABLED, alarm.getisEnabled())
+        cv.put(COL_URI_NOTIFICATION, alarm.getUriNotification())
 
         val res = db.insert(TABLE_NAME, null, cv)
         db.close()
@@ -78,6 +80,7 @@ class DatabaseHelper(context: Context) :
         cv.put(COL_SUN, if (days[Alarm.SUN]) 1 else 0)
 
         cv.put(COL_IS_ENABLED, alarm.getisEnabled())
+        cv.put(COL_URI_NOTIFICATION, alarm.getUriNotification())
 
         val res = db.update(TABLE_NAME, cv, "$ID = $id", null)
         db.close()
@@ -130,6 +133,7 @@ class DatabaseHelper(context: Context) :
         const val COL_SAT = "saturday"
         const val COL_SUN = "sunday"
         const val COL_IS_ENABLED = "is_enabled"
+        const val COL_URI_NOTIFICATION = "uri_notification"
 
     }
 }

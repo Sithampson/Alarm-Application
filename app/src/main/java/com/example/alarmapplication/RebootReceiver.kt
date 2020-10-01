@@ -30,31 +30,37 @@ class RebootReceiver : BroadcastReceiver() {
                 allDays[5] = cursor.getInt(8) == 1
                 allDays[6] = cursor.getInt(9) == 1
 
+                val uriNotification = cursor.getString(11)
+
                 val c = Calendar.getInstance()
+                val currentTime = System.currentTimeMillis()
                 val dayOfWeek = c.get(Calendar.DAY_OF_WEEK)
                 c.timeInMillis = time
 
-                val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-                    intent.putExtra("Alarm_label", label)
-                    intent.putExtra("Alarm_id", id)
-                    PendingIntent.getBroadcast(
-                        context, id.toInt(), intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                }
+                if(c.timeInMillis > currentTime){
+                    val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
+                        intent.putExtra("Alarm_label", label)
+                        intent.putExtra("Alarm_id", id)
+                        intent.putExtra("Alarm_notification_sound", uriNotification)
+                        PendingIntent.getBroadcast(
+                            context, id.toInt(), intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+                    }
 
-                if(!allDays[0] && !allDays[1] && !allDays[2] && !allDays[3] && !allDays[4] && !allDays[5] && !allDays[6]){
-                    alarmManager?.setExact(AlarmManager.RTC_WAKEUP, c.timeInMillis, alarmIntent)
-                }
+                    if(!allDays[0] && !allDays[1] && !allDays[2] && !allDays[3] && !allDays[4] && !allDays[5] && !allDays[6]){
+                        alarmManager?.setExact(AlarmManager.RTC_WAKEUP, c.timeInMillis, alarmIntent)
+                    }
 
-                else if(allDays[dayOfWeek-1]){
-                    c.set(Calendar.DAY_OF_WEEK, dayOfWeek)
-                    alarmManager?.setRepeating(
-                        AlarmManager.RTC_WAKEUP,
-                        c.timeInMillis,
-                        AlarmManager.INTERVAL_DAY * 7,
-                        alarmIntent
-                    )
+                    else if(allDays[dayOfWeek-1]){
+                        c.set(Calendar.DAY_OF_WEEK, dayOfWeek)
+                        alarmManager?.setRepeating(
+                            AlarmManager.RTC_WAKEUP,
+                            c.timeInMillis,
+                            AlarmManager.INTERVAL_DAY * 7,
+                            alarmIntent
+                        )
+                    }
                 }
             }
         }

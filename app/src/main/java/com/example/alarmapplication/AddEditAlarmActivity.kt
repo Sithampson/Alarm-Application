@@ -4,6 +4,9 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Intent
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -11,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.alarmapplication.data.DatabaseHelper
 import com.example.alarmapplication.model.Alarm
 import java.util.*
+
 
 class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
     private var alarmManager: AlarmManager? = null
@@ -30,8 +34,11 @@ class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
 
     private var savebutton: Button? = null
     private var deletebutton: Button? = null
+    private var ringtonebutton: Button? = null
 
     private var alarmId: Long = 0
+    private val REQUEST_CODE_ALERT_RINGTONE = 1
+    var uriNotification: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +57,7 @@ class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
 
         savebutton = findViewById(R.id.save_alarmbutton)
         deletebutton = findViewById(R.id.delete_alarmbutton)
+        ringtonebutton = findViewById(R.id.ringtone_alarmbutton)
 
         modeIntent = intent
         if(modeIntent!!.getStringExtra("Intent") == "Edit"){
@@ -61,6 +69,7 @@ class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
 
         savebutton?.setOnClickListener(this)
         deletebutton?.setOnClickListener(this)
+        ringtonebutton?.setOnClickListener(this)
 
     }
 
@@ -99,12 +108,19 @@ class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
                 alarm.setDay(Alarm.SAT, saturdaytogglebutton!!.isChecked)
                 alarm.setisEnabled(true)
 
+                if(uriNotification == null){
+                    uriNotification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    alarm.setUriNotification(uriNotification.toString())
+                }
+                else{
+                    alarm.setUriNotification(uriNotification.toString())
+                }
+
                 val db = DatabaseHelper(this)
                 var success: Long = 0
-                if(modeIntent!!.getStringExtra("Intent") == "Add") {
+                if (modeIntent!!.getStringExtra("Intent") == "Add") {
                     success = db.addAlarm(alarm)
-                }
-                else if(modeIntent!!.getStringExtra("Intent") == "Edit"){
+                } else if (modeIntent!!.getStringExtra("Intent") == "Edit") {
                     success = db.updateAlarm(alarm, alarmId)
                 }
 
@@ -113,30 +129,41 @@ class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
                     alarm.setId(id)
                     Toast.makeText(this, R.string.update_success, Toast.LENGTH_SHORT).show()
 
-                    alarmIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
-                        intent.putExtra("Alarm_label", alarm.getLabel())
-                        intent.putExtra("Alarm_id", alarm.getId())
-                        PendingIntent.getBroadcast(this, alarm.getId().toInt(), intent, FLAG_UPDATE_CURRENT)
+                    val currentTime = System.currentTimeMillis()
+                    if (time.timeInMillis > currentTime) {
+
+                        alarmIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
+                            intent.putExtra("Alarm_label", alarm.getLabel())
+                            intent.putExtra("Alarm_id", alarm.getId())
+                            intent.putExtra("Alarm_notification_sound", alarm.getUriNotification())
+                            PendingIntent.getBroadcast(
+                                this,
+                                alarm.getId().toInt(),
+                                intent,
+                                FLAG_UPDATE_CURRENT
+                            )
+                        }
+
+                        val dayOfWeek = time.get(Calendar.DAY_OF_WEEK)
+                        val allDays = alarm.getDay()
+
+                        if (!allDays!![0] && !allDays[1] && !allDays[2] && !allDays[3] && !allDays[4] && !allDays[5] && !allDays[6]) {
+                            alarmManager?.setExact(
+                                AlarmManager.RTC_WAKEUP,
+                                time.timeInMillis,
+                                alarmIntent
+                            )
+                        } else if (allDays[dayOfWeek - 1]) {
+                            time.set(Calendar.DAY_OF_WEEK, dayOfWeek)
+
+                            alarmManager?.setRepeating(
+                                AlarmManager.RTC_WAKEUP,
+                                time.timeInMillis,
+                                AlarmManager.INTERVAL_DAY * 7,
+                                alarmIntent
+                            )
+                        }
                     }
-
-
-                    val dayOfWeek = time.get(Calendar.DAY_OF_WEEK)
-                    val allDays = alarm.getDay()
-
-                    if(!allDays!![0] && !allDays[1] && !allDays[2] && !allDays[3] && !allDays[4] && !allDays[5] && !allDays[6]){
-                        alarmManager?.setExact(AlarmManager.RTC_WAKEUP, time.timeInMillis, alarmIntent)
-                    }
-                    else if(allDays[dayOfWeek-1]){
-                        time.set(Calendar.DAY_OF_WEEK, dayOfWeek)
-
-                        alarmManager?.setRepeating(
-                            AlarmManager.RTC_WAKEUP,
-                            time.timeInMillis,
-                            AlarmManager.INTERVAL_DAY * 7,
-                            alarmIntent
-                        )
-                    }
-
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
 
@@ -144,24 +171,36 @@ class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
                 } else {
                     Toast.makeText(this, R.string.update_failed, Toast.LENGTH_SHORT).show()
                 }
-
             }
 
-            R.id.delete_alarmbutton ->{
+            R.id.delete_alarmbutton -> {
                 val alarm = Alarm()
                 val db = DatabaseHelper(this)
                 val res = db.deleteAlarm(alarmId)
                 alarmIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
-                    PendingIntent.getBroadcast(this, alarm.getId().toInt(), intent, FLAG_UPDATE_CURRENT)
+                    PendingIntent.getBroadcast(
+                        this,
+                        alarm.getId().toInt(),
+                        intent,
+                        FLAG_UPDATE_CURRENT
+                    )
                 }
-                if(res > 0){
+                if (res > 0) {
                     alarmManager!!.cancel(alarmIntent)
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     Toast.makeText(this, "Alarm deleted successfully", Toast.LENGTH_SHORT).show()
-                }
-                else
+                } else
                     Toast.makeText(this, "Error deleting alarm", Toast.LENGTH_SHORT).show()
+            }
+
+            R.id.ringtone_alarmbutton -> {
+//                uriNotification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+//                ringTone = RingtoneManager.getRingtone(this, uriNotification)
+                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+                startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE)
+
             }
         }
     }
@@ -171,6 +210,16 @@ class AddEditAlarmActivity : AppCompatActivity(), View.OnClickListener {
         c.timeInMillis = time
         alarmTimePicker?.minute = c.get(Calendar.MINUTE)
         alarmTimePicker?.hour = c.get(Calendar.HOUR_OF_DAY)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_ALERT_RINGTONE && resultCode == RESULT_OK && data != null) {
+            uriNotification = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+//            ringTone = RingtoneManager.getRingtone(this, uri)
+//            Toast.makeText(this, ringTone.toString(), Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
