@@ -13,10 +13,12 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".AddEditAlarmActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:label="Set Alarm">
         </activity>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:label="Alarms">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

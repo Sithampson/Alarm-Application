@@ -13,47 +13,60 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <View
+        android:id="@+id/divider_timepicker_label"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@+id/alarmTimePicker"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/labelTextview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Label"
+        style="?android:attr/textAppearanceMedium"
+        android:layout_below="@id/divider_timepicker_label"
+        android:layout_marginBottom="2.5dp"/>
+
+
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text=""
-        android:id="@+id/labelText"
+        android:id="@+id/alarmLabelText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/alarmTimePicker"
+        android:layout_below="@+id/labelTextview"
         android:inputType="text" />
 
-    <Button
-        android:id="@+id/save_alarmbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/labelText"
-        android:layout_centerHorizontal="true"
-        android:text="Save"/>
+    <View
+        android:id="@+id/divider_label_repeat"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@+id/alarmLabelText"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"/>
 
-    <Button
-        android:id="@+id/delete_alarmbutton"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/save_alarmbutton"
-        android:layout_centerHorizontal="true"
-        android:text="Delete"/>
-
-    <Button
-        android:id="@+id/ringtone_alarmbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/delete_alarmbutton"
-        android:layout_centerHorizontal="true"
-        android:text="Ringtone"/>
+        android:id="@+id/repeatTextView"
+        android:text="Repeat"
+        style="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/divider_label_repeat"
+        android:layout_marginBottom="2.5dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_below="@id/repeatTextView">
 
         <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/sunday_togglebutton"

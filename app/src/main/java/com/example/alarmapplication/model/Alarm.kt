@@ -1,6 +1,5 @@
 package com.example.alarmapplication.model
 
-import android.net.Uri
 import java.io.Serializable
 
 class Alarm(){
@@ -17,7 +16,6 @@ class Alarm(){
     private var label: String = ""
     private var allDays = BooleanArray(size = 7)
     private var isEnabled = false
-    private var urinotification: String? = null
 
     fun getId(): Long {
         return id
@@ -57,14 +55,6 @@ class Alarm(){
 
     fun setisEnabled(isEnabled: Boolean) {
         this.isEnabled = isEnabled
-    }
-
-    fun getUriNotification(): String {
-        return urinotification.toString()
-    }
-
-    fun setUriNotification(uri: String){
-        this.urinotification = uri
     }
 
 

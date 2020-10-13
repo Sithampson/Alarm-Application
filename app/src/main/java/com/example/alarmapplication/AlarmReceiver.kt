@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
@@ -21,12 +20,8 @@ class AlarmReceiver: BroadcastReceiver() {
 
         val label = intent.getStringExtra("Alarm_label")
         val id = intent.getLongExtra("Alarm_id", 0).toInt()
-        val uriNotification = intent.getStringExtra("Alarm_notification_sound")
-        val uri = Uri.parse(uriNotification)
-
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
 
         createNotificationChannel(context)
 
@@ -37,8 +32,7 @@ class AlarmReceiver: BroadcastReceiver() {
         builder.setContentText(label)
         builder.setTicker(label)
         builder.setVibrate(longArrayOf(1000, 500, 1000, 500, 1000, 500))
-//        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-        builder.setSound(uri)
+        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
         builder.setAutoCancel(true)
         builder.priority = Notification.PRIORITY_HIGH
 

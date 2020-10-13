@@ -63,7 +63,6 @@ class AlarmRowAdapter(private val context: Context, alarmList: List<Alarm>?) : R
             val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
                 intent.putExtra("Alarm_label", alarm.getLabel())
                 intent.putExtra("Alarm_id", alarm.getId())
-                intent.putExtra("Alarm_notification_sound", alarm.getUriNotification())
                 PendingIntent.getBroadcast(context, alarm.getId().toInt(), intent,
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )

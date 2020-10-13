@@ -30,8 +30,6 @@ class RebootReceiver : BroadcastReceiver() {
                 allDays[5] = cursor.getInt(8) == 1
                 allDays[6] = cursor.getInt(9) == 1
 
-                val uriNotification = cursor.getString(11)
-
                 val c = Calendar.getInstance()
                 val currentTime = System.currentTimeMillis()
                 val dayOfWeek = c.get(Calendar.DAY_OF_WEEK)
@@ -41,7 +39,6 @@ class RebootReceiver : BroadcastReceiver() {
                     val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
                         intent.putExtra("Alarm_label", label)
                         intent.putExtra("Alarm_id", id)
-                        intent.putExtra("Alarm_notification_sound", uriNotification)
                         PendingIntent.getBroadcast(
                             context, id.toInt(), intent,
                             PendingIntent.FLAG_UPDATE_CURRENT
